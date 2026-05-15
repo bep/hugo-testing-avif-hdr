@@ -1,0 +1,18 @@
+baseURL = "https://example.com/"
+title   = "Gallery"
+
+# Only home for now, remove what you want.
+disableKinds = [
+    "taxonomy",
+    "term",
+    "404",
+    "page",
+    "robotstxt",
+    "rss",
+    "sitemap",
+]
+
+[module]
+    [[module.mounts]]
+        source = 'content/guest'
+        target = 'content'

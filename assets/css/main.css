@@ -1,0 +1,162 @@
+@import "components/reset.css";
+
+/* ── Tokens ── */
+:root {
+  color-scheme: dark light;
+
+  /* Dark mode as default (photography-first) */
+  --bg: oklch(0.13 0.01 260);
+  --bg-surface: oklch(0.17 0.012 260);
+  --fg: oklch(0.93 0.005 260);
+  --fg-muted: oklch(0.62 0.01 260);
+  --fg-dim: oklch(0.45 0.008 260);
+  --accent: oklch(0.78 0.04 80);
+  --border: oklch(0.25 0.008 260);
+
+  /* Spacing scale (4pt base) */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 48px;
+  --space-2xl: 64px;
+  --space-3xl: 96px;
+
+  /* Type scale */
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-lg: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  --text-xl: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: oklch(0.97 0.005 80);
+    --bg-surface: oklch(0.94 0.006 80);
+    --fg: oklch(0.15 0.01 260);
+    --fg-muted: oklch(0.45 0.01 260);
+    --fg-dim: oklch(0.6 0.008 260);
+    --accent: oklch(0.45 0.05 80);
+    --border: oklch(0.85 0.006 80);
+  }
+}
+
+/* ── Base ── */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: var(--text-base);
+  background: var(--bg);
+  color: var(--fg);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-md) clamp(var(--space-md), 2vw, var(--space-lg));
+  width: 100%;
+}
+
+header .site-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+header nav ul {
+  display: flex;
+  gap: var(--space-lg);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+header nav a {
+  font-size: var(--text-sm);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+header nav a:hover {
+  color: var(--fg);
+}
+
+/* ── Main ── */
+main {
+  flex: 1;
+  width: 100%;
+  padding: 0 clamp(var(--space-md), 2vw, var(--space-lg));
+  padding-bottom: var(--space-md);
+}
+
+/* ── Gallery header ── */
+.gallery-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+}
+
+.gallery-header h1 {
+  font-size: var(--text-base);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+.gallery-header .photo-count {
+  font-size: var(--text-sm);
+  color: var(--fg-dim);
+  margin: 0;
+}
+
+/* ── Gallery grid ── */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  gap: var(--space-xs);
+}
+
+.gallery a {
+  display: block;
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Responsive columns */
+@media (max-width: 640px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+}
+
+/* ── Footer ── */
+footer {
+  padding: var(--space-md) clamp(var(--space-md), 2vw, var(--space-lg));
+  width: 100%;
+}
+
+footer small {
+  font-size: var(--text-sm);
+  color: var(--fg-dim);
+}
