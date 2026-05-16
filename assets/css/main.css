@@ -55,34 +55,56 @@ body {
   flex-direction: column;
 }
 
-/* ── Header ── */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-md) clamp(var(--space-md), 2vw, var(--space-lg));
-  width: 100%;
-}
-
-header .site-title {
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--fg-muted);
-}
-
-/* ── Format switch (SDR ↔ HDR segmented toggle) ── */
+/* ── Format switch (SDR ↔ HDR segmented toggle, floats over gallery) ── */
 .format-switch {
-  position: relative;
+  position: fixed;
+  top: clamp(var(--space-sm), 2vw, var(--space-md));
+  right: clamp(var(--space-sm), 2vw, var(--space-md));
+  z-index: 10;
   display: inline-flex;
   align-items: center;
   gap: 2px;
   padding: 4px;
   border-radius: 9999px;
-  background: var(--bg-surface);
-  border: 1px solid var(--border);
+  background: oklch(0.08 0.005 260 / 0.7);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid oklch(1 0 0 / 0.12);
   box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.15),
-    0 8px 24px -8px rgb(0 0 0 / 0.25);
+    0 1px 2px rgb(0 0 0 / 0.4),
+    0 12px 28px -8px rgb(0 0 0 / 0.6);
+  transform-origin: center;
+}
+
+/* Attention pulse only fires on the landing page; section navigations stay calm. */
+body.is-home .format-switch {
+  animation: format-switch-attention 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s 3
+    both;
+}
+
+@keyframes format-switch-attention {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.3),
+      0 8px 24px -8px rgb(0 0 0 / 0.5),
+      0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent),
+      inset 0 0 0 1px color-mix(in oklab, var(--accent) 0%, transparent);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.3),
+      0 8px 32px -8px rgb(0 0 0 / 0.6),
+      0 0 32px 4px color-mix(in oklab, var(--accent) 70%, transparent),
+      inset 0 0 0 1px color-mix(in oklab, var(--accent) 80%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.is-home .format-switch {
+    animation: none;
+  }
 }
 
 .format-switch__pill {
@@ -162,36 +184,13 @@ header .site-title {
 main {
   flex: 1;
   width: 100%;
-  padding: 0 clamp(var(--space-md), 2vw, var(--space-lg));
-  padding-bottom: var(--space-md);
-}
-
-/* ── Gallery header ── */
-.gallery-header {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-md);
-  padding: var(--space-md) 0;
-}
-
-.gallery-header h1 {
-  font-size: var(--text-base);
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  margin: 0;
-}
-
-.gallery-header .photo-count {
-  font-size: var(--text-sm);
-  color: var(--fg-dim);
-  margin: 0;
 }
 
 /* ── Gallery grid ── */
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
-  gap: var(--space-xs);
+  gap: 2px;
   /* Captured as its own view-transition group so the SDR↔HDR swap
      crossfades smoothly instead of being lumped into the root snapshot. */
   view-transition-name: gallery;
@@ -209,19 +208,11 @@ main {
   display: block;
 }
 
-/* Responsive columns */
-@media (max-width: 640px) {
-  header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-xs);
-  }
-}
-
 /* ── Footer ── */
 footer {
   padding: var(--space-md) clamp(var(--space-md), 2vw, var(--space-lg));
   width: 100%;
+  text-align: center;
 }
 
 footer small {
