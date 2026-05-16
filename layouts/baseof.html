@@ -3,6 +3,8 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="color-scheme" content="dark" />
+		<meta name="theme-color" content="#181b22" />
 		<title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ printf "%s | %s" .Title site.Title }}{{ end }}</title>
 		{{- with resources.Get "css/main.css" }}
 			{{- $opts := dict
@@ -37,27 +39,27 @@
 	</head>
 	<body>
 		<header>
-			<span class="site-title">{{ site.Title }}</span>
-			<nav>
-				<ul>
-					{{ $currentSection := . }}
-					{{ if .IsHome }}
-						{{ $currentSection = index .Sections 0 }}
+			<span class="site-title"></span>
+			<nav class="format-switch" aria-label="Image format">
+				<span class="format-switch__pill" aria-hidden="true"></span>
+				{{ $currentSection := . }}
+				{{ if .IsHome }}
+					{{ $currentSection = index .Sections 0 }}
+				{{ end }}
+				{{ range site.Home.Sections }}
+					{{ if eq . $currentSection }}
+						<span class="format-switch__option is-active" aria-current="page">{{ .LinkTitle }}</span>
+					{{ else }}
+						<a class="format-switch__option" href="{{ .RelPermalink }}" title="Switch to {{ .LinkTitle }}">{{ .LinkTitle }}</a>
 					{{ end }}
-					{{ range site.Home.Sections }}
-						{{ if eq . $currentSection }}
-							{{ continue }}
-						{{ end }}
-						<li><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></li>
-					{{ end }}
-				</ul>
+				{{ end }}
 			</nav>
 		</header>
 		<main>
 			{{ block "main" . }}{{ end }}
 		</main>
 		<footer>
-			<small>Copyright {{ now.Year }}. All rights reserved.</small>
+			<small>Copyright {{ now.Year }} Bjørn Erik Pedersen. All rights reserved.</small>
 		</footer>
 	</body>
 </html>

@@ -12,6 +12,9 @@ disableKinds = [
     "sitemap",
 ]
 
+[imaging.avif]
+    encoderspeed = 9
+
 [module]
     [[module.mounts]]
         source = 'content/guest'

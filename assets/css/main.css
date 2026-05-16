@@ -1,17 +1,20 @@
 @import "components/reset.css";
 
+@view-transition {
+  navigation: auto;
+}
+
 /* ── Tokens ── */
 :root {
-  color-scheme: dark light;
+  color-scheme: dark;
 
-  /* Dark mode as default (photography-first) */
   --bg: oklch(0.13 0.01 260);
-  --bg-surface: oklch(0.17 0.012 260);
+  --bg-surface: oklch(0.27 0.014 260);
   --fg: oklch(0.93 0.005 260);
-  --fg-muted: oklch(0.62 0.01 260);
-  --fg-dim: oklch(0.45 0.008 260);
-  --accent: oklch(0.78 0.04 80);
-  --border: oklch(0.25 0.008 260);
+  --fg-muted: oklch(0.78 0.01 260);
+  --fg-dim: oklch(0.65 0.008 260);
+  --accent: oklch(0.72 0.19 5);
+  --border: oklch(0.38 0.01 260);
 
   /* Spacing scale (4pt base) */
   --space-xs: 4px;
@@ -29,26 +32,21 @@
   --text-xl: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: oklch(0.97 0.005 80);
-    --bg-surface: oklch(0.94 0.006 80);
-    --fg: oklch(0.15 0.01 260);
-    --fg-muted: oklch(0.45 0.01 260);
-    --fg-dim: oklch(0.6 0.008 260);
-    --accent: oklch(0.45 0.05 80);
-    --border: oklch(0.85 0.006 80);
-  }
-}
-
 /* ── Base ── */
 * {
   box-sizing: border-box;
 }
 
+html {
+  background: var(--bg);
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   font-size: var(--text-base);
   background: var(--bg);
   color: var(--fg);
@@ -60,7 +58,7 @@ body {
 /* ── Header ── */
 header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   padding: var(--space-md) clamp(var(--space-md), 2vw, var(--space-lg));
   width: 100%;
@@ -72,25 +70,92 @@ header .site-title {
   color: var(--fg-muted);
 }
 
-header nav ul {
-  display: flex;
-  gap: var(--space-lg);
-  list-style: none;
-  margin: 0;
-  padding: 0;
+/* ── Format switch (SDR ↔ HDR segmented toggle) ── */
+.format-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 9999px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.15),
+    0 8px 24px -8px rgb(0 0 0 / 0.25);
 }
 
-header nav a {
-  font-size: var(--text-sm);
-  letter-spacing: 0.05em;
+.format-switch__pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  width: calc(50% - 5px);
+  border-radius: 9999px;
+  background: var(--accent);
+  pointer-events: none;
+  /* Named element morphs geometry across page navigation, giving the
+     pill a sliding animation between the two segments. */
+  view-transition-name: format-switch-pill;
+  transition:
+    left 0.25s ease,
+    right 0.25s ease;
+}
+
+/* Position the pill behind whichever option is active.
+   Children: 1 = .format-switch__pill, 2 = first option, 3 = second option. */
+.format-switch:has(.format-switch__option:nth-child(2).is-active)
+  .format-switch__pill {
+  left: 4px;
+}
+
+.format-switch:has(.format-switch__option:nth-child(3).is-active)
+  .format-switch__pill {
+  right: 4px;
+}
+
+.format-switch__option {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  place-content: center;
+  min-width: 64px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--fg-dim);
+  color: var(--fg-muted);
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
-header nav a:hover {
+.format-switch__option.is-active {
+  color: var(--bg);
+  cursor: default;
+}
+
+.format-switch__option:not(.is-active):hover,
+.format-switch__option:not(.is-active):focus-visible {
   color: var(--fg);
+  outline: none;
+}
+
+/* Tighten the default crossfade so the pill's slide reads as primary. */
+::view-transition-group(root) {
+  animation-duration: 0.2s;
+}
+
+::view-transition-group(format-switch-pill) {
+  animation-duration: 0.4s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+::view-transition-old(gallery),
+::view-transition-new(gallery) {
+  animation-duration: 0.5s;
+  animation-timing-function: ease-in-out;
 }
 
 /* ── Main ── */
@@ -125,8 +190,11 @@ main {
 /* ── Gallery grid ── */
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(440px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
   gap: var(--space-xs);
+  /* Captured as its own view-transition group so the SDR↔HDR swap
+     crossfades smoothly instead of being lumped into the root snapshot. */
+  view-transition-name: gallery;
 }
 
 .gallery a {
