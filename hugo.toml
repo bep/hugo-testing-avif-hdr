@@ -3,19 +3,20 @@ title   = "HDR vs SDR"
 
 # Only home for now, remove what you want.
 disableKinds = [
-    "taxonomy",
-    "term",
-    "404",
-    "page",
-    "robotstxt",
-    "rss",
-    "sitemap",
+	"taxonomy",
+	"term",
+	"404",
+	"page",
+	"section",
+	"robotstxt",
+	"rss",
+	"sitemap",
 ]
 
 [imaging.avif]
-    encoderspeed = 9
+	encoderspeed = 9
 
 [module]
-    [[module.mounts]]
-        source = 'content/guest'
-        target = 'content'
+	[[module.mounts]]
+		source = 'content/guest'
+		target = 'content'
