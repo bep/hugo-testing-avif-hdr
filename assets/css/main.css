@@ -1,83 +1,41 @@
+@import "hugo:vars";
 @import "components/reset.css";
+@import "components/base.css";
 
-/* ── Tokens ── */
-:root {
-  color-scheme: dark;
+:root { color-scheme: dark; }
 
-  --bg: oklch(0.13 0.01 260);
-  --bg-surface: oklch(0.27 0.014 260);
-  --fg: oklch(0.93 0.005 260);
-  --fg-muted: oklch(0.78 0.01 260);
-  --fg-dim: oklch(0.65 0.008 260);
-  --accent: oklch(0.72 0.19 5);
-  --border: oklch(0.38 0.01 260);
-
-  /* Spacing scale (4pt base) */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 48px;
-  --space-2xl: 64px;
-  --space-3xl: 96px;
-
-  /* Type scale */
-  --text-sm: 0.8125rem;
-  --text-base: 0.9375rem;
-  --text-lg: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-  --text-xl: clamp(1.75rem, 1.25rem + 2vw, 2.75rem);
-}
-
-/* ── Base ── */
-* {
-  box-sizing: border-box;
-}
-
-html {
-  background: var(--bg);
-}
-
-body {
-  margin: 0;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-  font-size: var(--text-base);
-  background: var(--bg);
-  color: var(--fg);
-  min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
+/* The gallery owns the full main area — drop the default content rhythm. */
+main { width: 100%; }
 
 /* ── Format switch (SDR ↔ HDR segmented toggle, floats over gallery) ── */
 .format-switch {
-  position: fixed;
-  top: clamp(var(--space-sm), 2vw, var(--space-md));
-  right: clamp(var(--space-sm), 2vw, var(--space-md));
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 4px;
-  border-radius: 9999px;
-  background: oklch(0.08 0.005 260 / 0.7);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid oklch(1 0 0 / 0.12);
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.4),
-    0 12px 28px -8px rgb(0 0 0 / 0.6);
-  transform-origin: center;
-  /* Hoist the nav out of the root snapshot so it doesn't crossfade with
-     the rest of the page during the SPA-style view transition. The pill
-     inside is its own named group and still morphs across the swap. */
-  view-transition-name: format-switch;
+	position: fixed;
+	top: clamp(var(--space-xs), 2vw, var(--space-md));
+	right: clamp(var(--space-xs), 2vw, var(--space-md));
+	z-index: 10;
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+	padding: 4px;
+	border-radius: 9999px;
+	background: oklch(8% 0.005 260 / 0.7);
+	backdrop-filter: blur(20px) saturate(1.4);
+	-webkit-backdrop-filter: blur(20px) saturate(1.4);
+	border: 1px solid oklch(100% 0 0 / 0.12);
+	box-shadow:
+		0 1px 2px rgb(0 0 0 / 0.4),
+		0 12px 28px -8px rgb(0 0 0 / 0.6);
+	transform-origin: center;
+	/* Hoist the nav out of the root snapshot so it doesn't crossfade with
+	   the rest of the page during the SPA-style view transition. The pill
+	   inside is its own named group and still morphs across the swap. */
+	view-transition-name: format-switch;
+	animation: format-switch-attention 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s 3 both;
 }
 
 .format-switch--lightbox {
-  view-transition-name: format-switch-lightbox;
+	view-transition-name: format-switch-lightbox;
+	animation: none;
 }
 
 /* Keep chrome elements visually persistent across JS view transitions
@@ -88,161 +46,149 @@ body {
 ::view-transition-group(format-switch-lightbox),
 ::view-transition-group(lightbox-close),
 ::view-transition-group(lightbox-hints) {
-  animation: none;
+	animation: none;
 }
 ::view-transition-old(format-switch),
 ::view-transition-old(format-switch-lightbox),
 ::view-transition-old(lightbox-close),
 ::view-transition-old(lightbox-hints) {
-  display: none;
+	display: none;
 }
 ::view-transition-new(format-switch),
 ::view-transition-new(format-switch-lightbox),
 ::view-transition-new(lightbox-close),
 ::view-transition-new(lightbox-hints) {
-  animation: none;
-  opacity: 1;
-}
-
-/* Attention pulse only fires on the landing page; section navigations stay calm. */
-body.is-home .format-switch {
-  animation: format-switch-attention 1.2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s 3
-    both;
+	animation: none;
+	opacity: 1;
 }
 
 @keyframes format-switch-attention {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.3),
-      0 8px 24px -8px rgb(0 0 0 / 0.5),
-      0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent),
-      inset 0 0 0 1px color-mix(in oklab, var(--accent) 0%, transparent);
-  }
-  50% {
-    transform: scale(1.08);
-    box-shadow:
-      0 1px 2px rgb(0 0 0 / 0.3),
-      0 8px 32px -8px rgb(0 0 0 / 0.6),
-      0 0 32px 4px color-mix(in oklab, var(--accent) 70%, transparent),
-      inset 0 0 0 1px color-mix(in oklab, var(--accent) 80%, transparent);
-  }
+	0%, 100% {
+		transform: scale(1);
+		box-shadow:
+			0 1px 2px rgb(0 0 0 / 0.3),
+			0 8px 24px -8px rgb(0 0 0 / 0.5),
+			0 0 0 0 color-mix(in oklab, var(--accent) 0%, transparent),
+			inset 0 0 0 1px color-mix(in oklab, var(--accent) 0%, transparent);
+	}
+	50% {
+		transform: scale(1.08);
+		box-shadow:
+			0 1px 2px rgb(0 0 0 / 0.3),
+			0 8px 32px -8px rgb(0 0 0 / 0.6),
+			0 0 32px 4px color-mix(in oklab, var(--accent) 70%, transparent),
+			inset 0 0 0 1px color-mix(in oklab, var(--accent) 80%, transparent);
+	}
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.is-home .format-switch {
-    animation: none;
-  }
+	.format-switch {
+		animation: none;
+	}
 }
 
 .format-switch__pill {
-  position: absolute;
-  top: 4px;
-  bottom: 4px;
-  width: calc(50% - 5px);
-  border-radius: 9999px;
-  background: var(--accent);
-  pointer-events: none;
-  /* Named element morphs geometry across page navigation, giving the
-     pill a sliding animation between the two segments. */
-  view-transition-name: format-switch-pill;
-  transition:
-    left 0.25s ease,
-    right 0.25s ease;
+	position: absolute;
+	top: 4px;
+	bottom: 4px;
+	width: calc(50% - 5px);
+	border-radius: 9999px;
+	background: var(--accent);
+	pointer-events: none;
+	/* Named element morphs geometry across page navigation, giving the
+	   pill a sliding animation between the two segments. */
+	view-transition-name: format-switch-pill;
+	transition:
+		left 0.25s ease,
+		right 0.25s ease;
 }
 
 /* Position the pill behind whichever option is active.
    Children: 1 = .format-switch__pill, 2 = first option, 3 = second option. */
-.format-switch:has(.format-switch__option:nth-child(2).is-active)
-  .format-switch__pill {
-  left: 4px;
+.format-switch:has(.format-switch__option:nth-child(2).is-active) .format-switch__pill {
+	left: 4px;
 }
 
-.format-switch:has(.format-switch__option:nth-child(3).is-active)
-  .format-switch__pill {
-  right: 4px;
+.format-switch:has(.format-switch__option:nth-child(3).is-active) .format-switch__pill {
+	right: 4px;
 }
 
 .format-switch__option {
-  position: relative;
-  z-index: 1;
-  display: inline-grid;
-  place-content: center;
-  min-width: 64px;
-  height: 40px;
-  padding: 0 18px;
-  border: none;
-  border-radius: 9999px;
-  background: transparent;
-  font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.2s ease;
+	position: relative;
+	z-index: 1;
+	display: inline-grid;
+	place-content: center;
+	min-width: 64px;
+	height: 40px;
+	padding: 0 18px;
+	border: none;
+	border-radius: 9999px;
+	background: transparent;
+	font-family: inherit;
+	font-size: var(--fs-label);
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--fg-mute);
+	text-decoration: none;
+	cursor: pointer;
+	transition: color 0.2s ease;
 }
 
 .format-switch__option.is-active {
-  color: var(--bg);
-  cursor: default;
+	color: var(--bg);
+	cursor: default;
 }
 
 .format-switch__option:not(.is-active):hover,
 .format-switch__option:not(.is-active):focus-visible {
-  color: var(--fg);
-  outline: none;
+	color: var(--fg);
+	outline: none;
 }
 
 /* ── Keyboard glyphs ── */
 .kbd {
-  display: inline-grid;
-  place-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 6px;
-  background: oklch(0.18 0.005 260 / 0.9);
-  border: 1px solid oklch(1 0 0 / 0.18);
-  border-bottom-width: 2px;
-  color: var(--fg);
-  font:
-    600 0.75rem / 1 ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace;
-  text-transform: none;
-  letter-spacing: 0;
+	display: inline-grid;
+	place-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 6px;
+	border-radius: 6px;
+	background: oklch(18% 0.005 260 / 0.9);
+	border: 1px solid oklch(100% 0 0 / 0.18);
+	border-bottom-width: 2px;
+	color: var(--fg);
+	font: 600 0.75rem / 1 var(--font-mono);
+	text-transform: none;
+	letter-spacing: 0;
 }
 
 /* Hide keyboard hints on touch-only devices */
 @media (hover: none) {
-  .lightbox__hints {
-    display: none;
-  }
+	.lightbox__hints {
+		display: none;
+	}
 }
 
 /* Tighten the default crossfade so the pill's slide reads as primary. */
 ::view-transition-group(root) {
-  animation-duration: 0.2s;
+	animation-duration: 0.2s;
 }
 
 ::view-transition-group(format-switch-pill) {
-  animation-duration: 0.4s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	animation-duration: 0.4s;
+	animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* Suppress the default fade on old/new so the pill never dims. For format
    toggles the new pseudo still slides because the group's transform morph
    carries it from old position to new. For image-nav (pill doesn't move)
    it stays fully opaque in place. */
 ::view-transition-old(format-switch-pill) {
-  display: none;
+	display: none;
 }
 ::view-transition-new(format-switch-pill) {
-  animation: none;
-  opacity: 1;
+	animation: none;
+	opacity: 1;
 }
 
 /* In real DOM the option buttons (z-index: 1) render above the pill so the
@@ -252,204 +198,182 @@ body.is-home .format-switch {
    own group. It sits above the pill in capture order, matching real-DOM
    stacking, and the rest of the nav stays in its original layer. */
 .format-switch__option.is-active {
-  view-transition-name: format-switch-active-label;
+	view-transition-name: format-switch-active-label;
 }
 
 ::view-transition-group(format-switch-active-label) {
-  animation: none;
+	animation: none;
 }
 ::view-transition-old(format-switch-active-label) {
-  display: none;
+	display: none;
 }
 ::view-transition-new(format-switch-active-label) {
-  animation: none;
-  opacity: 1;
+	animation: none;
+	opacity: 1;
 }
 
 ::view-transition-old(gallery),
 ::view-transition-new(gallery) {
-  animation-duration: 0.5s;
-  animation-timing-function: ease-in-out;
-}
-
-/* ── Main ── */
-main {
-  flex: 1;
-  width: 100%;
+	animation-duration: 0.5s;
+	animation-timing-function: ease-in-out;
 }
 
 /* ── Gallery grid ── */
 .gallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
-  gap: 2px;
-  /* Captured as its own view-transition group so the SDR↔HDR swap
-     crossfades smoothly instead of being lumped into the root snapshot. */
-  view-transition-name: gallery;
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(440px, 100%), 1fr));
+	gap: 2px;
+	/* Captured as its own view-transition group so the SDR↔HDR swap
+	   crossfades smoothly instead of being lumped into the root snapshot. */
+	view-transition-name: gallery;
 }
 
 .gallery a {
-  display: block;
-  position: relative;
-  overflow: hidden;
+	display: block;
+	position: relative;
+	overflow: hidden;
 }
 
 .gallery img {
-  width: 100%;
-  height: auto;
-  display: block;
+	width: 100%;
+	height: auto;
+	display: block;
 }
 
 /* ── Lightbox ── */
 .lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  background: oklch(0.05 0.005 260);
-  animation: lightbox-fade 0.2s ease-out;
+	position: fixed;
+	inset: 0;
+	z-index: 100;
+	background: oklch(5% 0.005 260);
+	animation: lightbox-fade 0.2s ease-out;
 }
 
 .lightbox[hidden] {
-  display: none;
+	display: none;
 }
 
 @keyframes lightbox-fade {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+	from { opacity: 0; }
+	to   { opacity: 1; }
 }
 
 .lightbox__image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  /* Captured as its own view-transition group so format toggles inside
-     the lightbox crossfade the same way the gallery does on navigation. */
-  view-transition-name: lightbox-image;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	pointer-events: none;
+	/* Captured as its own view-transition group so format toggles inside
+	   the lightbox crossfade the same way the gallery does on navigation. */
+	view-transition-name: lightbox-image;
 }
 
 ::view-transition-group(lightbox-image),
 ::view-transition-old(lightbox-image),
 ::view-transition-new(lightbox-image) {
-  animation-duration: 0.5s;
-  animation-timing-function: ease-in-out;
+	animation-duration: 0.5s;
+	animation-timing-function: ease-in-out;
 }
 
 .lightbox__close {
-  position: absolute;
-  z-index: 2;
-  top: clamp(var(--space-sm), 2vw, var(--space-md));
-  left: clamp(var(--space-sm), 2vw, var(--space-md));
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  display: grid;
-  place-items: center;
-  border-radius: 9999px;
-  background: oklch(0.08 0.005 260 / 0.7);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  view-transition-name: lightbox-close;
-  border: 1px solid oklch(1 0 0 / 0.12);
-  color: var(--fg);
-  cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease;
+	position: absolute;
+	z-index: 2;
+	top: clamp(var(--space-xs), 2vw, var(--space-md));
+	left: clamp(var(--space-xs), 2vw, var(--space-md));
+	width: 40px;
+	height: 40px;
+	padding: 0;
+	display: grid;
+	place-items: center;
+	border-radius: 9999px;
+	background: oklch(8% 0.005 260 / 0.7);
+	backdrop-filter: blur(20px) saturate(1.4);
+	-webkit-backdrop-filter: blur(20px) saturate(1.4);
+	view-transition-name: lightbox-close;
+	border: 1px solid oklch(100% 0 0 / 0.12);
+	color: var(--fg);
+	cursor: pointer;
+	transition:
+		color 0.2s ease,
+		background 0.2s ease;
 }
 
 .lightbox__close svg {
-  width: 18px;
-  height: 18px;
-  display: block;
+	width: 18px;
+	height: 18px;
+	display: block;
 }
 
 .lightbox__close:hover,
 .lightbox__close:focus-visible {
-  background: oklch(0.14 0.005 260 / 0.85);
-  outline: none;
+	background: oklch(14% 0.005 260 / 0.85);
+	outline: none;
 }
 
 body.lightbox-open {
-  overflow: hidden;
+	overflow: hidden;
 }
 
 /* Hide the page-level format-switch while the modal owns the toggle. */
 body.lightbox-open .format-switch:not(.format-switch--lightbox) {
-  display: none;
+	display: none;
 }
 
 .lightbox__hints {
-  position: absolute;
-  z-index: 2;
-  bottom: clamp(var(--space-md), 3vw, var(--space-lg));
-  left: 50%;
-  transform: translateX(-50%);
-  view-transition-name: lightbox-hints;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: 8px 16px;
-  border-radius: 9999px;
-  background: oklch(0.08 0.005 260 / 0.7);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid oklch(1 0 0 / 0.12);
-  box-shadow:
-    0 1px 2px rgb(0 0 0 / 0.4),
-    0 12px 28px -8px rgb(0 0 0 / 0.6);
-  color: var(--fg-muted);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  pointer-events: none;
-  max-width: calc(100% - var(--space-lg) * 2);
+	position: absolute;
+	z-index: 2;
+	bottom: clamp(var(--space-md), 3vw, var(--space-lg));
+	left: 50%;
+	transform: translateX(-50%);
+	view-transition-name: lightbox-hints;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	padding: 8px 16px;
+	border-radius: 9999px;
+	background: oklch(8% 0.005 260 / 0.7);
+	backdrop-filter: blur(20px) saturate(1.4);
+	-webkit-backdrop-filter: blur(20px) saturate(1.4);
+	border: 1px solid oklch(100% 0 0 / 0.12);
+	box-shadow:
+		0 1px 2px rgb(0 0 0 / 0.4),
+		0 12px 28px -8px rgb(0 0 0 / 0.6);
+	color: var(--fg-mute);
+	font-size: 0.7rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	pointer-events: none;
+	max-width: calc(100% - var(--space-lg) * 2);
 }
 
 .lightbox__hints__group {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
 }
 
 .lightbox__hints__sep {
-  width: 1px;
-  align-self: stretch;
-  background: oklch(1 0 0 / 0.14);
+	width: 1px;
+	align-self: stretch;
+	background: oklch(100% 0 0 / 0.14);
 }
 
 @media (max-width: 520px) {
-  .lightbox__hints {
-    gap: 6px;
-    padding: 6px 12px;
-    font-size: 0.65rem;
-    letter-spacing: 0.04em;
-  }
-  .lightbox__hints__group {
-    gap: 4px;
-  }
-  .lightbox__hints .kbd {
-    min-width: 18px;
-    height: 18px;
-    padding: 0 4px;
-    font-size: 0.65rem;
-  }
-}
-
-/* ── Footer ── */
-footer {
-  padding: var(--space-md) clamp(var(--space-md), 2vw, var(--space-lg));
-  width: 100%;
-  text-align: center;
-}
-
-footer small {
-  font-size: var(--text-sm);
-  color: var(--fg-dim);
+	.lightbox__hints {
+		gap: 6px;
+		padding: 6px 12px;
+		font-size: 0.65rem;
+		letter-spacing: 0.04em;
+	}
+	.lightbox__hints__group {
+		gap: 4px;
+	}
+	.lightbox__hints .kbd {
+		min-width: 18px;
+		height: 18px;
+		padding: 0 4px;
+		font-size: 0.65rem;
+	}
 }

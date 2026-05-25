@@ -1,54 +1,68 @@
 {{ define "main" }}
-{{ $hdrImages := .Resources.Match "hdr/*" }}
-<div class="gallery" data-format="hdr">
-	{{ range $hdrImages }}
-		{{ if reflect.IsImageResourceProcessable . }}
-			{{ $hdr := . }}
-			{{ $base := path.BaseName $hdr.RelPermalink }}
-			{{ $sdr := $.Resources.GetMatch (printf "sdr/%s.*" $base) }}
-			{{ $hdrThumb := $hdr.Fill "1200x800 Bottom" }}
-			{{ $sdrThumb := "" }}
-			{{ with $sdr }}{{ $sdrThumb = .Fill "1200x800 Bottom" }}{{ end }}
-			<a href="{{ $hdr.RelPermalink }}" target="_blank"
-				data-hdr="{{ $hdr.RelPermalink }}"
-				data-hdr-thumb="{{ $hdrThumb.RelPermalink }}"
-				{{ with $sdr }}data-sdr="{{ .RelPermalink }}"{{ end }}
-				{{ with $sdrThumb }}data-sdr-thumb="{{ .RelPermalink }}"{{ end }}>
-				<img src="{{ $hdrThumb.RelPermalink }}" alt="" loading="lazy">
-			</a>
-		{{ end }}
+<nav class="format-switch" aria-label="Image format">
+	<span class="format-switch__pill" aria-hidden="true"></span>
+	{{ range $i, $fmt := slice (dict "key" "hdr" "label" "HDR") (dict "key" "sdr" "label" "SDR") }}
+		{{ $isActive := eq $i 1 }}
+		<button type="button" class="format-switch__option{{ if $isActive }} is-active{{ end }}" data-format="{{ $fmt.key }}"{{ if $isActive }} aria-current="page"{{ end }} title="Show {{ $fmt.label }}">{{ $fmt.label }}</button>
 	{{ end }}
-</div>
-<div class="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
-	<button class="lightbox__close" type="button" aria-label="Close">
-		<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-			<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-		</svg>
-	</button>
-	<nav class="format-switch format-switch--lightbox" aria-label="Image format">
-		<span class="format-switch__pill" aria-hidden="true"></span>
-		{{ range $i, $fmt := slice (slice "hdr" "HDR") (slice "sdr" "SDR") }}
-			{{ $key := index $fmt 0 }}
-			{{ $label := index $fmt 1 }}
-			<button type="button" class="format-switch__option{{ if eq $i 0 }} is-active{{ end }}" data-format="{{ $key }}">{{ $label }}</button>
+</nav>
+<main>
+	{{ $hdrImages := .Resources.Match "hdr/*" }}
+	<div class="gallery" data-format="sdr">
+		{{ range $hdrImages }}
+			{{ if reflect.IsImageResourceProcessable . }}
+				{{ $hdr := . }}
+				{{ $base := path.BaseName $hdr.RelPermalink }}
+				{{ $sdr := $.Resources.GetMatch (printf "sdr/%s.*" $base) }}
+				{{ $hdrThumb := $hdr.Fill "1200x800 Bottom" }}
+				{{ $sdrThumb := "" }}
+				{{ with $sdr }}{{ $sdrThumb = .Fill "1200x800 Bottom" }}{{ end }}
+				{{ $initial := or $sdr $hdr }}
+				{{ $initialThumb := or $sdrThumb $hdrThumb }}
+				<a href="{{ $initial.RelPermalink }}" target="_blank"
+					data-hdr="{{ $hdr.RelPermalink }}"
+					data-hdr-thumb="{{ $hdrThumb.RelPermalink }}"
+					{{ with $sdr }}data-sdr="{{ .RelPermalink }}"{{ end }}
+					{{ with $sdrThumb }}data-sdr-thumb="{{ .RelPermalink }}"{{ end }}>
+					<img src="{{ $initialThumb.RelPermalink }}" alt="" loading="lazy">
+				</a>
+			{{ end }}
 		{{ end }}
-	</nav>
-	<img class="lightbox__image" src="" alt="">
-	<div class="lightbox__hints" aria-hidden="true">
-		<span class="lightbox__hints__group">
-			<kbd class="kbd">←</kbd><kbd class="kbd">→</kbd>
-			<span>image</span>
-		</span>
-		<span class="lightbox__hints__sep"></span>
-		<span class="lightbox__hints__group">
-			<kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd>
-			<span>format</span>
-		</span>
-		<span class="lightbox__hints__sep"></span>
-		<span class="lightbox__hints__group">
-			<kbd class="kbd">Esc</kbd>
-			<span>close</span>
-		</span>
 	</div>
-</div>
+	<div class="lightbox" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+		<button class="lightbox__close" type="button" aria-label="Close">
+			<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+				<path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+			</svg>
+		</button>
+		<nav class="format-switch format-switch--lightbox" aria-label="Image format">
+			<span class="format-switch__pill" aria-hidden="true"></span>
+			{{ range $i, $fmt := slice (slice "hdr" "HDR") (slice "sdr" "SDR") }}
+				{{ $key := index $fmt 0 }}
+				{{ $label := index $fmt 1 }}
+				<button type="button" class="format-switch__option{{ if eq $i 1 }} is-active{{ end }}" data-format="{{ $key }}">{{ $label }}</button>
+			{{ end }}
+		</nav>
+		<img class="lightbox__image" src="" alt="">
+		<div class="lightbox__hints" aria-hidden="true">
+			<span class="lightbox__hints__group">
+				<kbd class="kbd">←</kbd><kbd class="kbd">→</kbd>
+				<span>image</span>
+			</span>
+			<span class="lightbox__hints__sep"></span>
+			<span class="lightbox__hints__group">
+				<kbd class="kbd">↑</kbd><kbd class="kbd">↓</kbd>
+				<span>format</span>
+			</span>
+			<span class="lightbox__hints__sep"></span>
+			<span class="lightbox__hints__group">
+				<kbd class="kbd">Esc</kbd>
+				<span>close</span>
+			</span>
+		</div>
+	</div>
+	<section class="sr-only" aria-label="{{ .Title }}">
+		{{ .Content }}
+	</section>
+</main>
 {{ end }}

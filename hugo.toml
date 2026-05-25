@@ -1,22 +1,49 @@
-baseURL = "https://example.com/"
-title   = "HDR vs SDR"
+baseURL                = "https://hdrsdr.com/"
+title                  = "HDR vs SDR"
+locale                 = "en-us"
+defaultContentLanguage = "en"
+enableRobotsTXT        = true
 
-# Only home for now, remove what you want.
-disableKinds = [
-	"taxonomy",
-	"term",
-	"404",
-	"page",
-	"section",
-	"robotstxt",
-	"rss",
-	"sitemap",
-]
+_merge = "deep"
+
+disableKinds = ["taxonomy", "term", "404", "section", "page", "section", "rss"]
+
+[params]
+	name         = "HDR vs SDR"
+	description  = "A side-by-side comparison of High Dynamic Range (HDR) and Standard Dynamic Range (SDR) photos."
+	author       = "Bjørn Erik Pedersen"
+	authorURL    = "https://github.com/bep"
+	authorHandle = "bep"
+	themeColor   = "#181b22"
+	keywords     = ["HDR", "SDR", "photo", "comparison", "dynamic range", "AVIF"]
+	# Opt out of the theme's webfont default — system stack via vars.font-sans below.
+	fontsHref = ""
+
+	# Design tokens consumed via @import "hugo:vars" in main.css.
+	# hdrsdr is dark only; no [params.vars.dark] override block needed.
+	[params.vars]
+		bg        = "oklch(13% 0.010 260)"
+		surface   = "oklch(27% 0.014 260)"
+		rule      = "oklch(38% 0.010 260)"
+		rule-soft = "oklch(32% 0.008 260)"
+		fg        = "oklch(93% 0.005 260)"
+		fg-mute   = "oklch(78% 0.010 260)"
+		fg-dim    = "oklch(65% 0.008 260)"
+		accent    = "oklch(72% 0.190 5)"
+		match-bg  = "oklch(28% 0.040 5)"
+		match-fg  = "oklch(82% 0.080 5)"
+		font-sans = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
+		font-mono = "ui-monospace, SFMono-Regular, Menlo, monospace"
 
 [imaging.avif]
 	encoderspeed = 9
 
+[sitemap]
+	changefreq = "weekly"
+	priority   = 1.0
+	filename   = "sitemap.xml"
+
 [module]
-	[[module.mounts]]
-		source = 'content/guest'
-		target = 'content'
+
+	[[module.imports]]
+		path = "github.com/bep/gitjoin.com"

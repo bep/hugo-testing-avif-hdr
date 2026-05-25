@@ -11,7 +11,7 @@ const lightboxOptions = allFormatOptions.filter((b) =>
 const FORMATS = ['hdr', 'sdr'];
 
 let currentSources = null;
-let currentFormat = gallery?.dataset.format ?? 'hdr';
+let currentFormat = gallery?.dataset.format ?? 'sdr';
 let currentAnchor = null;
 let lastFocus = null;
 let swapGen = 0;
