@@ -4,6 +4,7 @@
 **/.DS_Store
 hugo_stats.json
 node_modules/
+.cache/
 public/
 resources/_gen
 notes.txt

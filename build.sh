@@ -57,6 +57,7 @@ main() {
 	echo "Verifying installations..."
 	echo Go: "$(go version)"
 	echo Hugo: "$(hugo version)"
+
 	echo Node.js: "$(node --version)"
 
 	# Configure Git
@@ -68,7 +69,10 @@ main() {
 
 	# Build the site
 	echo "Building the site..."
-	hugo build --gc --minify
+	# Hugo's cacheDir is pointed at .cache so Cloudflare Workers' build cache
+	# (which detects Eleventy from package.json and persists .cache) carries
+	# Hugo's image/resource cache across builds.
+	hugo build --gc --minify --cacheDir="${PWD}/.cache"
 }
 
 main "$@"
