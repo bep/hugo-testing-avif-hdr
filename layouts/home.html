@@ -2,13 +2,13 @@
 <nav class="format-switch" aria-label="Image format">
 	<span class="format-switch__pill" aria-hidden="true"></span>
 	{{ range $i, $fmt := slice (dict "key" "hdr" "label" "HDR") (dict "key" "sdr" "label" "SDR") }}
-		{{ $isActive := eq $i 1 }}
+		{{ $isActive := eq $i 0 }}
 		<button type="button" class="format-switch__option{{ if $isActive }} is-active{{ end }}" data-format="{{ $fmt.key }}"{{ if $isActive }} aria-current="page"{{ end }} title="Show {{ $fmt.label }}">{{ $fmt.label }}</button>
 	{{ end }}
 </nav>
 <main>
 	{{ $hdrImages := .Resources.Match "hdr/*" }}
-	<div class="gallery" data-format="sdr">
+	<div class="gallery" data-format="hdr">
 		{{ range $hdrImages }}
 			{{ if reflect.IsImageResourceProcessable . }}
 				{{ $hdr := . }}
@@ -17,8 +17,8 @@
 				{{ $hdrThumb := $hdr.Fill "1200x800 Bottom" }}
 				{{ $sdrThumb := "" }}
 				{{ with $sdr }}{{ $sdrThumb = .Fill "1200x800 Bottom" }}{{ end }}
-				{{ $initial := or $sdr $hdr }}
-				{{ $initialThumb := or $sdrThumb $hdrThumb }}
+				{{ $initial := or $hdr $sdr }}
+				{{ $initialThumb := or $hdrThumb $sdrThumb }}
 				<a href="{{ $initial.RelPermalink }}" target="_blank"
 					data-hdr="{{ $hdr.RelPermalink }}"
 					data-hdr-thumb="{{ $hdrThumb.RelPermalink }}"
@@ -40,7 +40,7 @@
 			{{ range $i, $fmt := slice (slice "hdr" "HDR") (slice "sdr" "SDR") }}
 				{{ $key := index $fmt 0 }}
 				{{ $label := index $fmt 1 }}
-				<button type="button" class="format-switch__option{{ if eq $i 1 }} is-active{{ end }}" data-format="{{ $key }}">{{ $label }}</button>
+				<button type="button" class="format-switch__option{{ if eq $i 0 }} is-active{{ end }}" data-format="{{ $key }}">{{ $label }}</button>
 			{{ end }}
 		</nav>
 		<img class="lightbox__image" src="" alt="">
