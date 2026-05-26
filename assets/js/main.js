@@ -184,6 +184,40 @@ if (gallery && lightbox) {
   for (const btn of allFormatOptions) {
     btn.addEventListener('click', () => setFormat(btn.dataset.format));
   }
+
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartT = 0;
+  let touchTracking = false;
+  document.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) {
+      touchTracking = false;
+      return;
+    }
+    const t = e.touches[0];
+    touchStartX = t.clientX;
+    touchStartY = t.clientY;
+    touchStartT = performance.now();
+    touchTracking = true;
+  }, { passive: true });
+  document.addEventListener('touchend', (e) => {
+    if (!touchTracking || e.changedTouches.length !== 1) return;
+    touchTracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    if (performance.now() - touchStartT > 600) return;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    if (Math.max(absX, absY) < 50) return;
+    const isVertical = absY > absX;
+    if (isLightboxOpen()) {
+      if (isVertical) gotoImage(dy < 0 ? 1 : -1);
+      else toggleFormat();
+    } else if (!isVertical) {
+      toggleFormat();
+    }
+  });
 }
 
 document.addEventListener('keydown', (e) => {
@@ -196,24 +230,24 @@ document.addEventListener('keydown', (e) => {
       closeLightbox();
       return;
     }
-    if (e.key === 'ArrowLeft') {
+    if (e.key === 'ArrowUp') {
       e.preventDefault();
       gotoImage(-1);
       return;
     }
-    if (e.key === 'ArrowRight') {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       gotoImage(1);
       return;
     }
-    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
       e.preventDefault();
       toggleFormat();
     }
     return;
   }
 
-  if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') return;
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
   e.preventDefault();
   toggleFormat();
 });
