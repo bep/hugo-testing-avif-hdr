@@ -14,7 +14,7 @@
 				{{ $hdr := . }}
 				{{ $base := path.BaseName $hdr.RelPermalink }}
 				{{ $sdr := $.Resources.GetMatch (printf "sdr/%s.*" $base) }}
-				{{ $hdrThumb := $hdr.Fill "1200x800 Bottom" }}
+				{{ $hdrThumb := $hdr.Fill "1200x800 Bottom q60" }}
 				{{ $sdrThumb := "" }}
 				{{ with $sdr }}{{ $sdrThumb = .Fill "1200x800 Bottom" }}{{ end }}
 				{{ $initial := or $hdr $sdr }}

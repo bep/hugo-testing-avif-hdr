@@ -35,9 +35,6 @@ disableKinds = ["taxonomy", "term", "404", "section", "page", "section", "rss"]
 		font-sans = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif"
 		font-mono = "ui-monospace, SFMono-Regular, Menlo, monospace"
 
-[imaging.avif]
-	encoderspeed = 9
-
 [sitemap]
 	changefreq = "weekly"
 	priority   = 1.0
