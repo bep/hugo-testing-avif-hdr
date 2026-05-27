@@ -8,6 +8,11 @@ _merge = "deep"
 
 disableKinds = ["taxonomy", "term", "404", "section", "page", "section", "rss"]
 
+[caches]
+	[caches.images]
+		dir    = ':cacheDir'
+		maxAge = -1
+
 [params]
 	name         = "HDR vs SDR"
 	description  = "A side-by-side comparison of High Dynamic Range (HDR) and Standard Dynamic Range (SDR) photos."
